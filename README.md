@@ -3,7 +3,7 @@ Repositório para as diferentes etapas do projeto. Cada trabalho é armazenado e
 
 Nesse trabalho desenvolveremos o RELÂMPAGO, um barco habilitado para vencer uma corrida no Lago da Reitoria, inspirado no personagem de Carro, Relâmpgo McQueen!
 
-![image](https://github.com/Lucas-Duraes-Dev/Trabalho_PSE/assets/16578068/82bbaad1-ca46-4117-b5b7-6725fc08888b)
+![](https://gifs.eco.br/wp-content/uploads/2022/07/gifs-do-filme-cars-da-disney-4.gif)
 
 1. Motor DC
 2. Servo Motor (controle do Leme)
