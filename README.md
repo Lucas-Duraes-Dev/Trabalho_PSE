@@ -1,7 +1,7 @@
 # Trabalho_PSE
 Repositório para as diferentes etapas do projeto. Cada trabalho é armazenado em um branch
 
-Nesse trabalho desenvolveremos o RELÂMPAGO, um barco habilitado para vencer uma corrida no Lago da Reitoria, inspirado no personagem de Carro, Relâmpgo McQueen!
+Nesse trabalho desenvolveremos o RELÂMPAGO, um barco habilitado para vencer uma corrida no Lago da Reitoria, inspirado no personagem de Carros, Relâmpago McQueen!
 
 ![](https://gifs.eco.br/wp-content/uploads/2022/07/gifs-do-filme-cars-da-disney-4.gif)
 
