@@ -1,0 +1,2 @@
+Motor_DC.c:11:6:configMotor	16	static
+Motor_DC.c:18:6:changeMotorSpeed	24	static

@@ -1,0 +1,4 @@
+L293D.c:11:6:configMotor	16	static
+L293D.c:18:6:configHC595	24	static
+L293D.c:30:6:changeMotorOrientation	24	static
+L293D.c:54:6:changeMotorSpeed	24	static
