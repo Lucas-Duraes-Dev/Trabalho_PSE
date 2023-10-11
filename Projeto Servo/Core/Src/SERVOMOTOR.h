@@ -2,7 +2,7 @@
  * SERVOMOTOR.h
  *
  *  Created on: Oct 6, 2023
- *      Author: Stephanie, Lucas e Jackson
+ *      Authors: Stephanie, Lucas e Jackson
  */
 
 #ifndef SRC_SERVOMOTOR_H_
@@ -16,8 +16,7 @@
 #include <stdint.h>
 #include <math.h>
 
-int roundUp(int num);
-void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, int angulo);
+void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, uint16_t angulo);
 
 
 #endif /* SRC_SERVOMOTOR_H_ */

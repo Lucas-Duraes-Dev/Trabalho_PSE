@@ -41,7 +41,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim3;
-
+uint16_t angulo1 = 90;
+uint16_t angulo2 = 180;
+uint16_t i;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -99,23 +101,42 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  /*
+	  // MOVER DE 0º a 90º
+	  for(i = 0; i < angulo1; i++){
+		  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500,i);
+		  HAL_Delay(900);
+	  }
+
+
+	  // MOVER DE 90º a 180º
+	  for(i = angulo1; i < angulo2; i++){
+		  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500,i);
+		  HAL_Delay(900);
+	  }
+	 */
+
 	  // TESTANDO DIFERENTES ÂNGULOS
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 178); // 178º --> 180º
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 178);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 156); // 156º --> 160º
+
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 156);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 132); // 132º --> 135º
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 132);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 147);  // 147º --> 150º
+
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 147);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 53);  // 53º --> 55º
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 53);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 72); // 72º --> 75º
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 72);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 24); // 24º --> 25º
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 24);
 	  HAL_Delay(800);
-	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 0); // 0º --> 0º
+	  setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, 0);
 	  HAL_Delay(800);
+
 
   }
   /* USER CODE END 3 */
