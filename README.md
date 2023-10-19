@@ -1,13 +1,10 @@
-# Trabalho_PSE
-Repositório para as diferentes etapas do projeto. Cada trabalho é armazenado em um branch
+# Magnetômetro
 
-Nesse trabalho desenvolveremos o RELÂMPAGO, um barco habilitado para vencer uma corrida no Lago da Reitoria, inspirado no personagem de Carros, Relâmpago McQueen!
+O Magnetômetro será o responsável por obter as coordernadas X, Y e Z que indicarão a direção pela qual o 
+barco deverá se mover para percorrer o caminho definido pelos Beacons espalhados pelo lado durante o torneio.
 
-![](https://gifs.eco.br/wp-content/uploads/2022/07/gifs-do-filme-cars-da-disney-4.gif)
+O código trabalha com os endereços dos registradores do magnetômetro, que armazenarão as coordenadas dos eixos
+X, Y e Z. Utilizando o arco tangente no pontos X e Y, obtém-se o ângulo que será enviado ao servo motor e que
+por fim, será o responsável por controlar e mover o leme do barco.
 
-1. Motor DC
-2. Servo Motor (controle do Leme)
-3. Magnetômetro
-4. Módulo Bluetooth BLE
-5. Estratégias de deslocamento e controle
-6. Aplicação em RTOS (FreeRTOS)
+Para o desenvolvimento do código, as informações foram consultadas no Datasheet do HMC5883 disponível no link. https://www.makerhero.com/img/files/download/QMC5883L-Datasheet.pdf
