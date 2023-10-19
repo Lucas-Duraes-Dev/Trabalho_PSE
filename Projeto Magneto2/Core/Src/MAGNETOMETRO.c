@@ -17,7 +17,10 @@
  *
  * Usando a função atan2f calcula-se o arco tangente entre os pontos X e Y
  * obtendo assim o ângulo entre eles e que será repassado para o Servo Motor
- * fazer o controle do leme do barco. *
+ * fazer o controle do leme do barco.
+ *
+ * Como atan2f retorna um ângulo em radianos, a operação 180/pi foi necessária
+ * para converter o ângulo para graus.
  *
 */
 
