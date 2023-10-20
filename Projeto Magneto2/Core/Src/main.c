@@ -49,6 +49,7 @@ I2C_HandleTypeDef hi2c3;
  *   Write Register 09H by 0x1D (Define OSR = 512, Full Scale Range = 8 Gauss, ODR = 200Hz, set continuous measurement mode)
 */
 uint8_t config[2] = {0x01, 0x1D};
+uint16_t angulo;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,7 +106,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  getAngulo(hi2c3);
+	 angulo = (uint16_t) getAngulo(hi2c3);
   }
   /* USER CODE END 3 */
 }
