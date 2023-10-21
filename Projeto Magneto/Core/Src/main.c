@@ -43,7 +43,7 @@
 I2C_HandleTypeDef hi2c3;
 
 /* USER CODE BEGIN PV */
-uint8_t config[2] = {0x70, 0xA0, 0x00}; //CONTROL REG A (0x78), CONTROL REG B, MODE REGISTER
+uint8_t config[3] = {0x70, 0xA0, 0x00}; //CONTROL REG A (0x78), CONTROL REG B, MODE REGISTER
 uint8_t leitura[6];
 int16_t Xaxis, Yaxis, Zaxis;
 float leituraBussola, bussola;
