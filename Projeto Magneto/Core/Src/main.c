@@ -43,10 +43,15 @@
 I2C_HandleTypeDef hi2c3;
 
 /* USER CODE BEGIN PV */
-uint8_t config[2] = {0x01, 0x1D};
+uint8_t config[2] = {0x70, 0xA0, 0x00}; //CONTROL REG A (0x78), CONTROL REG B, MODE REGISTER
 uint8_t leitura[6];
 int16_t Xaxis, Yaxis, Zaxis;
 float leituraBussola, bussola;
+
+// HMC5883l - ADDRESS
+//7-bit address (0x1E) plus 1 bit read/write identifier, i.e. 0x3D for read and 0x3C for write.
+#define HMC5883l_ADDRESS (0x1E << 1)
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,7 +74,9 @@ static void MX_I2C3_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	Xaxis = 0;
+	Yaxis = 0;
+	Zaxis = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -92,8 +99,10 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
-  HAL_I2C_Mem_Write(&hi2c3, 0X1A, 0x08, 1, &config[0], 1, 100);
-  HAL_I2C_Mem_Write(&hi2c3, 0X1A, 0x09, 1, &config[1], 1, 100);
+  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, 0x00 , 1, &config[0] , 1, 100);
+  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, 0x01 , 1, &config[1] , 1, 100);
+  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, 0x02 , 1, &config[2] , 1, 100);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,26 +112,25 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_I2C_Mem_Read(&hi2c3, 0X1A, 0X06, 1, leitura, 1, 100);
-	  if((leitura[0]&0x01)==1){
-		  HAL_I2C_Mem_Read(&hi2c3, 0X1A, 0X00, 1, leitura, 6, 100);
-		  Xaxis = (leitura[1]<<8) | leitura[0];
-		  Yaxis = (leitura[3]<<8) | leitura[2];
-		  Zaxis = (leitura[5]<<8) | leitura[4];
-		  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-		  bussola = atan2f(Yaxis,Xaxis)*180/3.14;
+	  // RECEIVE X_axis
+	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x04, 1, leitura, 2, 100);
+	  Xaxis = (leitura[1]<<8) | leitura[0];
+	  // RECEIVE Y_axis
+	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x06, 1, leitura, 2, 100);
+	  Yaxis = (leitura[3]<<8) | leitura[2];
+	  // RECEIVE Z_axis
+	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x08, 1, leitura, 2, 100);
+	  Zaxis = (leitura[5]<<8) | leitura[4];
 
-		  if(bussola > 0){
-			  leituraBussola = bussola;
-		  }
-		  else{
-			  leituraBussola = 360 + bussola;
-		  }
+	  bussola = atan2f(Yaxis,Xaxis)*180/3.14;
 
+	  if(bussola > 0){
+		  leituraBussola = bussola;
 	  }
 	  else{
-		  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+		  leituraBussola = 360 + bussola;
 	  }
+
   }
   /* USER CODE END 3 */
 }
