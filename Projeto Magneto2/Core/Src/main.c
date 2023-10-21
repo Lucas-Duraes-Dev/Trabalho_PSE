@@ -43,13 +43,13 @@
 I2C_HandleTypeDef hi2c3;
 
 /* USER CODE BEGIN PV */
+uint8_t config[2] = {0x70, 0xA0, 0x00}; //CONTROL REG A (0x78), CONTROL REG B, MODE REGISTER
 
-/* De acordo com o Datasheet do HMC5883
- *   Write Register 0BH by 0x01 (Define Set/Reset period)
- *   Write Register 09H by 0x1D (Define OSR = 512, Full Scale Range = 8 Gauss, ODR = 200Hz, set continuous measurement mode)
-*/
-uint8_t config[2] = {0x01, 0x1D};
+// HMC5883l - ADDRESS
+// 7-bit address (0x1E) plus 1 bit read/write identifier, i.e. 0x3D for read and 0x3C for write.
+#define HMC5883l_ADDRESS (0x1E << 1)
 uint16_t angulo;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,8 +95,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
-  HAL_I2C_Mem_Write(&hi2c3, 0X1A, 0x08, 1, &config[0], 1, 100); // Definições dos registrados de escrita conforme Datasheet
-  HAL_I2C_Mem_Write(&hi2c3, 0X1A, 0x09, 1, &config[1], 1, 100);
+  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, 0x00 , 1, &config[0] , 1, 100);
+  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, 0x01 , 1, &config[1] , 1, 100);
+  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, 0x02 , 1, &config[2] , 1, 100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
