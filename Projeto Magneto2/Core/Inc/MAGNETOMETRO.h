@@ -13,9 +13,16 @@
 #include <math.h>
 #include <stm32f4xx_hal_i2c.h>
 
-// HMC5883l - ADDRESS
-// 7-bit address (0x1E) plus 1 bit read/write identifier, i.e. 0x3D for read and 0x3C for write.
+// HMC5883l - Endereço I2C de 7 bits
 #define HMC5883l_ADDRESS (0x1E << 1)
+
+// Endereços de registradores para o HMC5883l
+#define CONFIG_A_REGISTER 0x00
+#define CONFIG_B_REGISTER 0x01
+#define MODE_REGISTER 0x02
+#define DATA_X_MSB_REGISTER 0x03
+#define DATA_Z_MSB_REGISTER 0x05
+#define DATA_Y_MSB_REGISTER 0x07
 
 float getAngulo(I2C_HandleTypeDef i2c);
 

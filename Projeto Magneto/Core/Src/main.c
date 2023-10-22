@@ -113,13 +113,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  // RECEIVE X_axis
-	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x04, 1, leitura, 2, 100);
+	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x03, 1, leitura, 2, 100);
 	  Xaxis = (leitura[1]<<8) | leitura[0];
 	  // RECEIVE Y_axis
-	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x06, 1, leitura, 2, 100);
+	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x07, 1, leitura, 2, 100);
 	  Yaxis = (leitura[3]<<8) | leitura[2];
 	  // RECEIVE Z_axis
-	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x08, 1, leitura, 2, 100);
+	  HAL_I2C_Mem_Read(&hi2c3, HMC5883l_ADDRESS, 0x05, 1, leitura, 2, 100);
 	  Zaxis = (leitura[5]<<8) | leitura[4];
 
 	  bussola = atan2f(Yaxis,Xaxis)*180/3.14;
