@@ -25,6 +25,8 @@
 #define DATA_Y_MSB_REGISTER 0x07
 
 float getAngulo(I2C_HandleTypeDef i2c);
+void configuraMagnetometro(I2C_HandleTypeDef i2c, uint8_t taxaAquisicao, uint8_t ganho, uint8_t modoOperacao);
+
 
 
 #endif /* INC_MAGNETOMETRO_H_ */

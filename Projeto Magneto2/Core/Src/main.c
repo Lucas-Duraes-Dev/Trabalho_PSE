@@ -43,9 +43,6 @@
 I2C_HandleTypeDef hi2c3;
 
 /* USER CODE BEGIN PV */
-uint8_t config[3] = {0x70, 0xA0, 0x00}; // Valores para CONTROL REG A, CONTROL REG B e MODE REGISTER
-
-
 uint16_t angulo;
 
 /* USER CODE END PV */
@@ -93,10 +90,13 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
-  // Configuração do ganho, taxa de aquisição e modo de operação do magnetômetro
-  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, CONFIG_A_REGISTER , 1, &config[0] , 1, 100);
-  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, CONFIG_B_REGISTER , 1, &config[1] , 1, 100);
-  HAL_I2C_Mem_Write(&hi2c3, HMC5883l_ADDRESS, MODE_REGISTER, 1, &config[2] , 1, 100);
+
+  // Exemplode configuração do ganho, taxa de aquisição e modo de operação do magnetômetro
+  uint8_t config[3] = {0x70, 0xA0, 0x00}; // Valores de exemplo para CONTROL REG A, CONTROL REG B e MODE REGISTER
+  // config[0] = 0x70 = 01110000 -> Configuração de medição normal, output de dados de 15 Hz e média de 8 amostras por medição
+  // config[1] = 0xA0 = 10100000 -> Ganho de 4.7 GA
+  // config[2] = 0x00 = 00000000 -> Modo de leitura contínua
+  configuraMagnetometro(hi2c3, config[0], config[1], config[2]);
   /* USER CODE END 2 */
 
   /* Infinite loop */

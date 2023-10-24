@@ -55,3 +55,16 @@ float getAngulo(I2C_HandleTypeDef i2c){
 
 	return leituraBussola;
 }
+
+/*
+ * Configura os registradores de taxa de aquisição, ganho e modo de operação.
+ *
+*/
+void configuraMagnetometro(I2C_HandleTypeDef i2c, uint8_t taxaAquisicao, uint8_t ganho, uint8_t modoOperacao)
+{
+	  // Configuração do ganho, taxa de aquisição e modo de operação do magnetômetro
+	  HAL_I2C_Mem_Write(&i2c, HMC5883l_ADDRESS, CONFIG_A_REGISTER , 1, &taxaAquisicao , 1, 100);
+	  HAL_I2C_Mem_Write(&i2c, HMC5883l_ADDRESS, CONFIG_B_REGISTER , 1, &ganho, 1, 100);
+	  HAL_I2C_Mem_Write(&i2c, HMC5883l_ADDRESS, MODE_REGISTER, 1, &modoOperacao, 1, 100);
+}
+
