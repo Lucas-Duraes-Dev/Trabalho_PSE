@@ -44,16 +44,33 @@ float getAngulo(I2C_HandleTypeDef i2c){
 	HAL_I2C_Mem_Read(&i2c, HMC5883l_ADDRESS, DATA_Z_MSB_REGISTER, 1, leitura, 2, 100);
 	Z = (leitura[5]<<8) | leitura[4];
 
-	bussola = atan2f(Y,X)*180.0/3.14;
+	bussola = atan2(Y,X);
+
+	/* Para corrigir o ângulo de modo que o magnetômetro aponte para o
+	 * norte geográfico é preciso encontrar qual a declinação.
+	 * Utilizando os sites: http://www.magnetic-declination.com/
+	 * e https://www.ngdc.noaa.gov/geomag/calculators/ para encontrar
+	 * e o site https://planetcalc.com/71/ para realizar a conversão.
+	 * Encontramos que a nossa é -23* 6' 10" W. Que convertidas em radianos
+	 * equivale a 0.4032.
+	 *
+	 */
+	float declinacaoAngle = 0.4032;
+	bussola += declinacaoAngle;
+
+
+	// Converter radianos para graus
+	bussola = bussola * 180/3.14;
+
 
 	if(bussola > 0){
 		leituraBussola = bussola;
+		return leituraBussola;
 	}
 	else{
 		leituraBussola = 360 + bussola;
+		return leituraBussola;
 	}
-
-	return leituraBussola;
 }
 
 /*
@@ -67,4 +84,3 @@ void configuraMagnetometro(I2C_HandleTypeDef i2c, uint8_t taxaAquisicao, uint8_t
 	  HAL_I2C_Mem_Write(&i2c, HMC5883l_ADDRESS, CONFIG_B_REGISTER , 1, &ganho, 1, 100);
 	  HAL_I2C_Mem_Write(&i2c, HMC5883l_ADDRESS, MODE_REGISTER, 1, &modoOperacao, 1, 100);
 }
-
