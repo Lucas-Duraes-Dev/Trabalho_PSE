@@ -1,0 +1,5 @@
+../Core/Src/bluetooth.c:12:6:reset	24	static
+../Core/Src/bluetooth.c:18:6:start	24	static
+../Core/Src/bluetooth.c:24:6:getResponse	40	static
+../Core/Src/bluetooth.c:36:6:programarBluetooth	88	static
+../Core/Src/bluetooth.c:56:6:localizarBeacons	40	static
