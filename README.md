@@ -1,13 +1,5 @@
-# Trabalho_PSE
-Repositório para as diferentes etapas do projeto. Cada trabalho é armazenado em um branch
+O BLE será responsável por receber a intensidade dos sinais dos Beacons externos ao barco e a partir desses sinais será calculado a posição do barco no lago da competição.
 
-Nesse trabalho desenvolveremos o RELÂMPAGO, um barco habilitado para vencer uma corrida no Lago da Reitoria, inspirado no personagem de Carros, Relâmpago McQueen!
+O código apresenta a biblioteca para o módulo BLE, configurando o mesmo com as especificações dadas pelo professor no documento dado pelo Teams e encontra a força do sinal dos Beacons.
 
-![](https://gifs.eco.br/wp-content/uploads/2022/07/gifs-do-filme-cars-da-disney-4.gif)
-
-1. Motor DC
-2. Servo Motor (controle do Leme)
-3. Magnetômetro
-4. Módulo Bluetooth BLE
-5. Estratégias de deslocamento e controle
-6. Aplicação em RTOS (FreeRTOS)
+As configurações do módulo BLE foram feitas com base no datasheet do módulo, encontrado em: https://fccid.io/2AQ5YJDY-18/User-Manual/User-manual-4032434
