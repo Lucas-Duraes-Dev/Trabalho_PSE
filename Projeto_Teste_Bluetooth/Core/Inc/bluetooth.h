@@ -10,10 +10,14 @@
 
 #include "string.h"
 #include "stm32f4xx_hal.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 void reset(UART_HandleTypeDef huart);
 void start(UART_HandleTypeDef huart);
 void getResponse(UART_HandleTypeDef huart, char * resposta);
 void programarBluetooth(UART_HandleTypeDef huart);
 void localizarBeacons(UART_HandleTypeDef huart, char * resposta);
+void processarInformacoesBluetooth(const char* informacoes, char* numerosEncontrados);
+//void processarInformacoesBluetooth(char* numerosEncontrados);
 #endif /* INC_BLUETOOTH_H_ */
