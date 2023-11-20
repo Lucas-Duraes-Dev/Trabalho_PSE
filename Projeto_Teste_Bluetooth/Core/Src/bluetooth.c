@@ -8,6 +8,7 @@
 #include "string.h"
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 void reset(UART_HandleTypeDef huart){
 	char envio[12] = {0};
@@ -63,4 +64,45 @@ void localizarBeacons(UART_HandleTypeDef huart, char * resposta){
 
 		HAL_Delay(1000);
 
+}
+
+
+void processarInformacoesBluetooth(const char* informacoes, char* numerosEncontrados) {
+//void processarInformacoesBluetooth(char* numerosEncontrados) {
+    // Verificar se as referências são válidas
+    if (informacoes == NULL) {
+        printf("Parâmetros inválidos.\n");
+        return;
+    }
+
+    // Inicializar a string de números encontrados
+    numerosEncontrados[0] = '\0';
+
+    // Iterar sobre a string de informações
+    //char* informacoesCopia = strdup(informacoes); // Faz uma cópia da string para evitar modificar a original
+    char* informacoesCopia;
+    informacoesCopia = "+OK\r\n+DEV:1=EFC0F0845DBA,-60,Baseus E9\r\n+DEV:2=C0238D1B26A9,-82,[TV] Samsung AU7700 65 TV\r\n\r\n+DEV:3=ABC123456789,-75,Example Device\r\n+DEV:4=XZY987654321,-68,Sample Gadget\r\n";
+    char* token = strtok(informacoesCopia, "\r\n");
+
+    while (token != NULL) {
+    	printf( " %s\n", token );
+         //Verificar se a substring contém nomes específicos
+        if (strstr(token, "Baseus") || strstr(token, "ABC") || strstr(token, "Samsung")) {
+    	//if (strstr(token, "-")) {
+            // Encontrar o número entre '-' e ','
+            char* inicioNumero = strchr(token, ',') + 2;
+            char* fimNumero = strchr(token, '-') + 3;
+
+            if (inicioNumero != NULL && fimNumero != NULL && inicioNumero < fimNumero) {
+                // Copiar o número para a string de números encontrados
+                strncat(numerosEncontrados, inicioNumero, fimNumero - inicioNumero);
+                strncat(numerosEncontrados, "\r\n", 2);
+            }
+
+        }
+
+        token = strtok(NULL, "\r\n");
+    }
+
+    free(informacoesCopia); // Liberar a memória alocada
 }
