@@ -25,7 +25,7 @@
 #include <bluetooth.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,23 +92,16 @@ int main(void)
   MX_GPIO_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-  char *comp;
-  const char needle[10] = "Baseus";
+
   char res[32] = {0};
-  char res1[128] = {0};
+  const char res1[128] = {0};
+  const char res2[256] = {0};
   getResponse(huart4, res);
   HAL_Delay(1000);
   programarBluetooth(huart4);
   HAL_Delay(1000);
 
-  //char envio[32] = {0};
-  //char envio1[32] = {0};
-  //char resposta[32] = {0};
-  //char resposta1[32] = {0};
-  //sprintf(envio,"AT+NAME\r\n");
-  //sprintf(envio, "AT+RESET\r\n");
-  //sprintf(envio1, "AT+BAUD\r\n");
-  //sprintf(envio,"AT+STARTEN\r\nAT+NAME\r\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,14 +112,11 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  localizarBeacons(huart4, res1);
+	  processarInformacoesBluetooth(res1, res2);
+	  //void processarInformacoesBluetooth(res2);
  	  HAL_Delay(1000);
-	  //comp = strstr(res1, needle);
-	  //HAL_UART_Transmit(&huart4, (uint8_t *) envio, strlen(envio), 100);
-	  //HAL_UART_Receive(&huart4,  (uint8_t *) resposta, 8, 1000);
-	  //HAL_Delay(1000);
-	  //HAL_UART_Transmit(&huart4, (uint8_t *) envio1, strlen(envio1), 100);
-	  //HAL_UART_Receive(&huart4,  (uint8_t *) resposta1, 8, 1000);
-	 // HAL_Delay(1000);
+
+
   }
   /* USER CODE END 3 */
 }
