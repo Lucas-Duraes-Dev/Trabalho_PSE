@@ -50,6 +50,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -60,18 +62,26 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define USART_TX_Pin GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
+#define L293D_LATCH_Pin GPIO_PIN_6
+#define L293D_LATCH_GPIO_Port GPIOA
+#define L293D_PWM_Pin GPIO_PIN_7
+#define L293D_PWM_GPIO_Port GPIOA
+#define L293D_EN_Pin GPIO_PIN_8
+#define L293D_EN_GPIO_Port GPIOA
+#define L293D_SER_Pin GPIO_PIN_9
+#define L293D_SER_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define L293D_CLK_Pin GPIO_PIN_5
+#define L293D_CLK_GPIO_Port GPIOB
+#define SG90_PWM_Pin GPIO_PIN_6
+#define SG90_PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
