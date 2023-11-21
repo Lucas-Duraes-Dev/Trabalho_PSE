@@ -63,6 +63,7 @@ void estadoInicial();
 void proximoDestino();
 void linhaReta();
 void retaFinal();
+void reorientaRota();
 
 
 #endif /* INC_SISTEMA_NAVEGACAO_H_ */

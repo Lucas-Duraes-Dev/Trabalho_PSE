@@ -81,6 +81,9 @@ void pilotoAutomatico(){
 		case 3:
 			retaFinal();
 		break;
+		case 4:
+			reorientaRota();
+		break;
 		default:
 		break;
 	}
@@ -100,9 +103,9 @@ void proximoDestino(){
 	velocidade = 30;
 	posicaoAtual = encontrarPosicao(RSSI_1, RSSI_2, RSSI_3);
 
-	// Caso tenha ocorrido um erro e o barco já tenha passado pelo ponto de Apoio passar para o próximo ponto
+	// Caso tenha ocorrido um erro e o barco já tenha passado pelo ponto de Apoio ele irá para o Estado 4
 	if(abs(vetorPontosApoio[n].x) > abs(posicaoAtual.x) || abs(vetorPontosApoio[n].x) > abs(posicaoAtual.x)){
-		n++;
+		estado = 4;
 	}
 
 	A = (vetorPontosApoio[n].x - posicaoAtual.x);
@@ -136,14 +139,6 @@ void proximoDestino(){
 	if(n == numeroPontos - 1){
 		estado = 3; // Partiu linha de chegada!
 	}
-
-	/*
-	// Retirar o Ponto de Apoio já atingido
-	for(int i = 0; i < numeroPontos-1; i++){
-		vetorPontosApoio[i] = vetorPontosApoio[i+1];
-	}
-	*/
-
 }
 
 void linhaReta(){
@@ -194,3 +189,35 @@ void retaFinal(){
 		setPWMAngulo(htim3, TIM_CHANNEL_2, 12500, angulo+offset);
 	}
 }
+
+void reorientaRota(){
+	Coordenadas pontoMaisproximo;
+	float Xprox, Yprox;
+	int novoN = -1;
+	posicaoAtual = encontrarPosicao(RSSI_1, RSSI_2, RSSI_3);
+	d = sqrt(pow((posicaoAtual.x - B1_chegada.x),2)+ pow((posicaoAtual.y - B1_chegada.y),2));
+
+	if(d > 5){
+		// Iniciar os pontos com um valor para que possa ser feita a comparação
+		Xprox = abs(vetorPontosApoio[0].x - posicaoAtual.x);
+		Yprox = abs(vetorPontosApoio[0].y - posicaoAtual.y);
+
+		// Percorrer o vetor de pontos para encontrar os pontos mais próximos
+		for(int i = 0; i < numeroPontos; i++){
+			if((abs(vetorPontosApoio[i].x - posicaoAtual.x) <= Xprox) && abs(vetorPontosApoio[i].y - posicaoAtual.y) <= Yprox){
+				Xprox = abs(vetorPontosApoio[i].x - posicaoAtual.x);
+				Yprox = abs(vetorPontosApoio[i].y - posicaoAtual.y);
+				novoN = i;
+			}
+		}
+
+		if(novoN != -1){
+			n = novoN;
+			estado = 1;
+		}
+	}
+	else{
+		estado = 3;
+	}
+}
+
