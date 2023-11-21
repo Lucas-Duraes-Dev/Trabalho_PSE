@@ -49,7 +49,7 @@ Coordenadas vetorPontosApoio[] = {{-19.866482, -43.964610},
 Coordenadas posicaoAtual;
 Coordenadas PontosMagnetoXY;
 uint8_t numeroPontos = 7;
-uint16_t estado;
+uint16_t estado = 0;
 uint16_t angulo;
 uint16_t velocidade;
 int n; // contador
