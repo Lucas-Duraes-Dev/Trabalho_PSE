@@ -102,9 +102,11 @@ void estadoInicial(){
 void proximoDestino(){
 	velocidade = 30;
 	posicaoAtual = encontrarPosicao(RSSI_1, RSSI_2, RSSI_3);
-
+	d = sqrt(pow((posicaoAtual.x - vetorPontosApoio[n].x),2)+ pow((posicaoAtual.y - vetorPontosApoio[n].y),2));
+	
 	// Caso tenha ocorrido um erro e o barco já tenha passado pelo ponto de Apoio ele irá para o Estado 4
-	if(abs(vetorPontosApoio[n].x) > abs(posicaoAtual.x) || abs(vetorPontosApoio[n].x) > abs(posicaoAtual.x)){
+	// ou se a distância entre a posição atual e o ponto for maior a 6 metros
+	if(abs(vetorPontosApoio[n].x) > abs(posicaoAtual.x) || abs(vetorPontosApoio[n].y) > abs(posicaoAtual.y) || (d > 6)){
 		estado = 4;
 	}
 
