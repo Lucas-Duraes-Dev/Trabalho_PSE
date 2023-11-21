@@ -87,6 +87,12 @@ void pilotoAutomatico(){
 }
 
 void estadoInicial(){
+	velocidade = 0;
+	angulo = 0;
+	n = 0;
+	if(posicaoAtual = encontrarPosicao(RSSI_1, RSSI_2, RSSI_3) != 0){
+		estado = 1;
+	}
 
 }
 
