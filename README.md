@@ -69,6 +69,6 @@ O grupo buscou o sincronismo máximo possível entre a leitura dos 2 sensores e 
 ## Observações Principais
 
 - Os sensores não realizarão uma única leitura antes de enviar suas informações à task **controlador**. Serão realizadas várias leituras e apenas o resultado filtrado será adicionado à queue
-- Existe uma possiblidade de que o tempo de leitura de cada sensor ou o tempo de acionamento de cada motor possua uma grande diferença de tempo entre si, defasando o efeito do controle. O grupo optou por verificar o comportamento do sistema empiricamente nos momentos de teste e realizar ajustes caso isso se torne um aspecto relevante para a operação do barco.
+- Existe uma possiblidade de que o tempo de leitura de cada sensor ou o tempo de acionamento de cada motor sejam muito diferentes entre si, defasando o efeito do controle. O grupo optou por verificar o comportamento do sistema empiricamente nos momentos de teste e realizar ajustes caso isso se torne um aspecto problemático para a operação do barco.
 
 
