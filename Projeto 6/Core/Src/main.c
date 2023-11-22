@@ -30,8 +30,6 @@
 #include "MAGNETOMETRO.h"
 #include "queue.h"
 
-// TODO: Revisar timers do servomotor e motor DC
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +39,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 #define TEMPLO_CICLO_CONTROLE 1000
+#define NUMERO_DE_LEITURAS_MAGNETOMETRO 5
 
 #define BIT_MAGNETOMETRO 0x01
 #define BIT_BLUETOOTH 0x02
@@ -122,8 +122,6 @@ const osMessageQueueAttr_t queueServoMotor_attributes = {
 /* USER CODE BEGIN PV */
 
 osEventFlagsId_t grupoEventosBarco;
-
- uint8_t teste = 19;
 
 /* USER CODE END PV */
 
@@ -294,11 +292,11 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV4;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
     Error_Handler();
   }
@@ -360,7 +358,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 65535;
+  htim4.Init.Period = 1250;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -383,7 +381,7 @@ static void MX_TIM4_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 94;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -552,7 +550,7 @@ void startControlador(void *argument)
 		osDelay(pdMS_TO_TICKS(10));
 	}
 
-	// TODO: Pegar as informações do magnetômetro e do bluetooth
+	// TODO: Pegar as informações das queues do magnetômetro e bluetooth
 
 
 	// TODO: Realiza a estratégia de controle
@@ -594,6 +592,9 @@ void startMagnetometro(void *argument)
   // config[2] = 0x00 = 00000000 -> Modo de leitura contínua
   configuraMagnetometro(hi2c1, config[0], config[1], config[2]);
 
+  float anguloMagnetometro = 0;
+  float leiturasMagnetometro[NUMERO_DE_LEITURAS_MAGNETOMETRO];
+
 
   /* Infinite loop */
   for(;;)
@@ -601,12 +602,19 @@ void startMagnetometro(void *argument)
 	// Espera até que a task controlador solicite uma leitura
 	osEventFlagsWait(grupoEventosBarco, BIT_MAGNETOMETRO, osFlagsNoClear, osWaitForever);
 
+	// Realiza leituras
+	for(int i = 0; i < NUMERO_DE_LEITURAS_MAGNETOMETRO; i ++)
+	{
+		leiturasMagnetometro[i] = getAngulo(hi2c1);
+		anguloMagnetometro += leiturasMagnetometro[i];
+		leiturasMagnetometro[i] = 0;
+	}
+	anguloMagnetometro = anguloMagnetometro / NUMERO_DE_LEITURAS_MAGNETOMETRO;
 
-	teste += 1;
-
-	// TODO: Realizar leituras
-
-	// TODO: Enviar informações para a fila
+	// Envia informações para a fila
+	xQueueSend(queueMagnetometroHandle, &anguloMagnetometro, 100);
+	// Seta o valor do ângulo do magnetômetro para 0
+	anguloMagnetometro = 0;
 
 
 	// Realiza um clear no grupo de eventos após enviar suas informações
@@ -649,8 +657,6 @@ void startServoMotor(void *argument)
 
 	// Limpa a flag após mudar o ângulo do barco
     osEventFlagsClear(grupoEventosBarco, BIT_SERVO_MOTOR);
-
-    osDelay(1);
   }
   /* USER CODE END startServoMotor */
 }
@@ -678,7 +684,7 @@ void startBluetooth(void *argument)
 	// Espera até que a task controlador solicite uma leitura
 	osEventFlagsWait(grupoEventosBarco, BIT_BLUETOOTH, osFlagsNoClear, osWaitForever);
 
-	// TODO: Realizar leituras
+	// TODO: Realizar leituras filtradas
 
 	// TODO: Enviar informações para a fila
 
@@ -700,6 +706,9 @@ void startMotorDC(void *argument)
 {
   /* USER CODE BEGIN startMotorDC */
 
+  UBaseType_t quantidadeElementosQueue = 0;
+  uint8_t velocidadeMotorDC = 0; // Velocidade recebida por queueMotorDC
+
   // Structs de configuração para o PWM e o HC595
   motor_dc motorTeste;
   HC595 hc595;
@@ -710,15 +719,22 @@ void startMotorDC(void *argument)
 
   // TODO: Adicionar mensagens de debug
 
-  // TODO: Configurar orientação do motor DC;
-
   /* Infinite loop */
   for(;;)
   {
 	// Espera até que a task controlador solicite uma mudança de velocidade
 	osEventFlagsWait(grupoEventosBarco, BIT_MOTOR_DC, osFlagsNoClear, osWaitForever);
-	teste += 100;
-    osDelay(1);
+
+	// Verifica quantidade de elementos na queue
+	quantidadeElementosQueue =  uxQueueMessagesWaiting(queueMotorDCHandle);
+	if(quantidadeElementosQueue > 0)
+	{
+		xQueueReceive(queueMotorDCHandle, &velocidadeMotorDC, pdMS_TO_TICKS(100));
+
+		// Altera a velocidade do motor
+		changeMotorSpeed(&motorTeste, velocidadeMotorDC);
+
+	}
 
     // Limpa a flag após mudar a velocidade do barco
     osEventFlagsClear(grupoEventosBarco, BIT_MOTOR_DC);
