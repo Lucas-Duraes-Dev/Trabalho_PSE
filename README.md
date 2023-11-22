@@ -56,7 +56,7 @@ Tendo em vista as estruturas freeRTOS apresentadas até então, o sistema funcio
 1. Inicialização de todas as tasks, queues, bits de evento e periféricos do sistema. Todas as queues são inicializadas sem elementos e todos os bits de evento são inicializados como 0.
 2. Task **controlador** espera por TEMPLO_CICLO_CONTROLE milisegundos. 
 3. Task **controlador** seta os bits de evento **bitMagnetometro** e **bitBluetooth** para 1 sem intervalos de tempo significativo entre cada bit.
-4. Tasks **bluetooth** e **magnetometro** são ativadas uma vez que o seu bit de evento está igual a 1 e realizam suas respectivas leituras, enviando as informações coletadas para as queues **queueBluetooth** e **queueMagnetometro**; caso a adição das leituras às queues tenha sido feita com sucesso, seta os bits de evento para 0 sem intervalo de tempo significativo entre cada bit.
+4. Tasks **bluetooth** e **magnetometro** são ativadas uma vez que o seu bit de evento está igual a 1 e realizam suas respectivas leituras, enviando as informações coletadas para as queues **queueBluetooth** e **queueMagnetometro**; caso a adição das leituras às queues tenha sido feita com sucesso, cada task seta seu bit de evento para 0.
 5. Task **controlador** espera até que os bits de evento para as tasks **magnetometro** e **bluetooth** estão iguais a 0 e existam elementos nas 2 filas; realiza o cálculo da velocidade do motor DC e do ângulo do servomotor de acordo com a estratégia de controle do grupo
 6. Task **controlador** adiciona o valor da velocidade e o valor do ângulo nas queues **queueServoMotor** e **queueMotorDC**.
 7. Task **controlador** seta os bits de evento do motor DC e do servomotor para 1.
