@@ -1,0 +1,6 @@
+bluetooth.c:13:6:reset	24	static
+bluetooth.c:19:6:start	24	static
+bluetooth.c:25:6:getResponse	40	static
+bluetooth.c:37:6:programarBluetooth	88	static
+bluetooth.c:57:6:localizarBeacons	40	static
+bluetooth.c:70:6:processarInformacoesBluetooth	32	static

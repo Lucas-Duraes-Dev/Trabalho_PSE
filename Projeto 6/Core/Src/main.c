@@ -20,9 +20,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "SERVOMOTOR.h"
+#include "L293D.h"
+#include "bluetooth.h"
+#include "MAGNETOMETRO.h"
 
 /* USER CODE END Includes */
 
@@ -33,6 +37,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MODO_DEBUG
+
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,7 +55,11 @@ TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
+osThreadId controladorHandle;
+osThreadId magnetometroHandle;
+osThreadId servoMotorHandle;
+osThreadId bluetoothHandle;
+osThreadId motorDCHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -60,7 +71,11 @@ static void MX_I2C1_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM14_Init(void);
 static void MX_USART3_UART_Init(void);
-void StartDefaultTask(void const * argument);
+void startControlador(void const * argument);
+void startMagnetometro(void const * argument);
+void startServoMotor(void const * argument);
+void startBluetooth(void const * argument);
+void startMotorDC(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -124,9 +139,25 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of controlador */
+  osThreadDef(controlador, startControlador, osPriorityNormal, 0, 128);
+  controladorHandle = osThreadCreate(osThread(controlador), NULL);
+
+  /* definition and creation of magnetometro */
+  osThreadDef(magnetometro, startMagnetometro, osPriorityNormal, 0, 128);
+  magnetometroHandle = osThreadCreate(osThread(magnetometro), NULL);
+
+  /* definition and creation of servoMotor */
+  osThreadDef(servoMotor, startServoMotor, osPriorityNormal, 0, 128);
+  servoMotorHandle = osThreadCreate(osThread(servoMotor), NULL);
+
+  /* definition and creation of bluetooth */
+  osThreadDef(bluetooth, startBluetooth, osPriorityNormal, 0, 128);
+  bluetoothHandle = osThreadCreate(osThread(bluetooth), NULL);
+
+  /* definition and creation of motorDC */
+  osThreadDef(motorDC, startMotorDC, osPriorityNormal, 0, 128);
+  motorDCHandle = osThreadCreate(osThread(motorDC), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -410,14 +441,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_startControlador */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the controlador thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_startControlador */
+void startControlador(void const * argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -426,6 +457,110 @@ void StartDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_startMagnetometro */
+/**
+* @brief Function implementing the magnetometro thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startMagnetometro */
+void startMagnetometro(void const * argument)
+{
+  /* USER CODE BEGIN startMagnetometro */
+
+  // Parâmetros magnetômetro
+  uint8_t config[3] = {0x70, 0xA0, 0x00}; // Valores de exemplo para CONTROL REG A, CONTROL REG B e MODE REGISTER
+  // config[0] = 0x70 = 01110000 -> Configuração de medição normal, output de dados de 15 Hz e média de 8 amostras por medição
+  // config[1] = 0xA0 = 10100000 -> Ganho de 4.7 GA
+  // config[2] = 0x00 = 00000000 -> Modo de leitura contínua
+  configuraMagnetometro(hi2c1, config[0], config[1], config[2]);
+
+  // TODO: Mensagem de debug
+
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END startMagnetometro */
+}
+
+/* USER CODE BEGIN Header_startServoMotor */
+/**
+* @brief Function implementing the servoMotor thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startServoMotor */
+void startServoMotor(void const * argument)
+{
+  /* USER CODE BEGIN startServoMotor */
+
+	// Nenhuma configuração inicial é necessária para o servomotor
+
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END startServoMotor */
+}
+
+/* USER CODE BEGIN Header_startBluetooth */
+/**
+* @brief Function implementing the bluetooth thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startBluetooth */
+void startBluetooth(void const * argument)
+{
+  /* USER CODE BEGIN startBluetooth */
+
+	// String que armazena os resultados lidos pelo módulo bluetooth
+	char respostaBluetooth[128] = {0};
+	// Verifica se o módulo bluetooth está respondendo aos comandos
+	getResponse(huart3, respostaBluetooth);
+
+	// TODO: Mensagem de debug aqui
+
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END startBluetooth */
+}
+
+/* USER CODE BEGIN Header_startMotorDC */
+/**
+* @brief Function implementing the motorDC thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startMotorDC */
+void startMotorDC(void const * argument)
+{
+  /* USER CODE BEGIN startMotorDC */
+
+  // Structs de configuração para o PWM e o HC595
+  motor_dc motorTeste;
+  HC595 hc595;
+
+  // Configuração das structs de interação com o motor e com o HC595
+  configHC595(&hc595, L293D_EN_GPIO_Port, L293D_EN_Pin, L293D_CLK_GPIO_Port, L293D_CLK_Pin, L293D_SER_GPIO_Port, L293D_SER_Pin);
+  configMotor(&motorTeste, htim14, TIM_CHANNEL_1);
+
+  // TODO: Configurar orientação do motor DC
+
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END startMotorDC */
 }
 
  /**

@@ -72,3 +72,5 @@ O grupo buscou o sincronismo máximo possível entre a leitura dos 2 sensores e 
 - Existe uma possiblidade de que o tempo de leitura de cada sensor ou o tempo de acionamento de cada motor possua uma grande diferença de tempo entre si, defasando o efeito do controle. O grupo optou por verificar o comportamento do sistema empiricamente nos momentos de teste e realizar ajustes caso isso se torne um aspecto relevante para a operação do barco.
 
 
+
+https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads -> Baixar para o projeto CMOS e mudar no arquivo toolchains.cmake
