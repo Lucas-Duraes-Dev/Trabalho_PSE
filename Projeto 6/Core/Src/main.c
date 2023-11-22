@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -27,6 +28,8 @@
 #include "L293D.h"
 #include "bluetooth.h"
 #include "MAGNETOMETRO.h"
+
+// TODO: Revisar timers do servomotor e motor DC
 
 /* USER CODE END Includes */
 
@@ -37,7 +40,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MODO_DEBUG
+#define TEMPLO_CICLO_CONTROLE 1000
+
+#define BIT_MAGNETOMETRO 0x01
+#define BIT_BLUETOOTH 0x02
+#define BIT_SERVO_MOTOR 0x04
+#define BIT_MOTOR_DC 0x08
 
 
 /* USER CODE END PD */
@@ -55,12 +63,46 @@ TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart3;
 
-osThreadId controladorHandle;
-osThreadId magnetometroHandle;
-osThreadId servoMotorHandle;
-osThreadId bluetoothHandle;
-osThreadId motorDCHandle;
+/* Definitions for controlador */
+osThreadId_t controladorHandle;
+const osThreadAttr_t controlador_attributes = {
+  .name = "controlador",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for magnetometro */
+osThreadId_t magnetometroHandle;
+const osThreadAttr_t magnetometro_attributes = {
+  .name = "magnetometro",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for servoMotor */
+osThreadId_t servoMotorHandle;
+const osThreadAttr_t servoMotor_attributes = {
+  .name = "servoMotor",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for bluetooth */
+osThreadId_t bluetoothHandle;
+const osThreadAttr_t bluetooth_attributes = {
+  .name = "bluetooth",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for motorDC */
+osThreadId_t motorDCHandle;
+const osThreadAttr_t motorDC_attributes = {
+  .name = "motorDC",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
+
+osEventFlagsId_t grupoEventosBarco;
+
+ uint8_t teste = 19;
 
 /* USER CODE END PV */
 
@@ -71,11 +113,11 @@ static void MX_I2C1_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM14_Init(void);
 static void MX_USART3_UART_Init(void);
-void startControlador(void const * argument);
-void startMagnetometro(void const * argument);
-void startServoMotor(void const * argument);
-void startBluetooth(void const * argument);
-void startMotorDC(void const * argument);
+void startControlador(void *argument);
+void startMagnetometro(void *argument);
+void startServoMotor(void *argument);
+void startBluetooth(void *argument);
+void startMotorDC(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -122,6 +164,9 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -139,29 +184,31 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of controlador */
-  osThreadDef(controlador, startControlador, osPriorityNormal, 0, 128);
-  controladorHandle = osThreadCreate(osThread(controlador), NULL);
+  /* creation of controlador */
+  controladorHandle = osThreadNew(startControlador, NULL, &controlador_attributes);
 
-  /* definition and creation of magnetometro */
-  osThreadDef(magnetometro, startMagnetometro, osPriorityNormal, 0, 128);
-  magnetometroHandle = osThreadCreate(osThread(magnetometro), NULL);
+  /* creation of magnetometro */
+  magnetometroHandle = osThreadNew(startMagnetometro, NULL, &magnetometro_attributes);
 
-  /* definition and creation of servoMotor */
-  osThreadDef(servoMotor, startServoMotor, osPriorityNormal, 0, 128);
-  servoMotorHandle = osThreadCreate(osThread(servoMotor), NULL);
+  /* creation of servoMotor */
+  servoMotorHandle = osThreadNew(startServoMotor, NULL, &servoMotor_attributes);
 
-  /* definition and creation of bluetooth */
-  osThreadDef(bluetooth, startBluetooth, osPriorityNormal, 0, 128);
-  bluetoothHandle = osThreadCreate(osThread(bluetooth), NULL);
+  /* creation of bluetooth */
+  bluetoothHandle = osThreadNew(startBluetooth, NULL, &bluetooth_attributes);
 
-  /* definition and creation of motorDC */
-  osThreadDef(motorDC, startMotorDC, osPriorityNormal, 0, 128);
-  motorDCHandle = osThreadCreate(osThread(motorDC), NULL);
+  /* creation of motorDC */
+  motorDCHandle = osThreadNew(startMotorDC, NULL, &motorDC_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+  // Declara grupo de eventos utilizado
+  grupoEventosBarco = osEventFlagsNew(NULL);
+
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
   osKernelStart();
@@ -448,13 +495,49 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_startControlador */
-void startControlador(void const * argument)
+void startControlador(void *argument)
 {
   /* USER CODE BEGIN 5 */
+
+	uint32_t eventosBarco;
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	// Delay entre os ciclos de controle
+	osDelay(pdMS_TO_TICKS(TEMPLO_CICLO_CONTROLE));
+
+	// Seta as flags do bluetooth e magnetômetro
+	osEventFlagsSet(grupoEventosBarco, BIT_MAGNETOMETRO | BIT_BLUETOOTH);
+
+	// Espera até que os bits do bluetooth e magnetômetro sejam iguais a 0
+	eventosBarco = osEventFlagsGet(grupoEventosBarco);
+	while( (eventosBarco & BIT_BLUETOOTH) | (eventosBarco & BIT_MAGNETOMETRO) )
+	{
+		eventosBarco = osEventFlagsGet(grupoEventosBarco);
+		osDelay(pdMS_TO_TICKS(10));
+	}
+
+	// TODO: Pegar as informações do magnetômetro e do bluetooth
+
+
+	// TODO: Realiza a estratégia de controle
+
+
+	// TODO: Adiciona a nova velocidade e ângulo para as filas correspondentes
+
+
+	// Seta os bits de evento do motor dc e do servomotor após a adição dos elementos à fila
+	osEventFlagsSet(grupoEventosBarco, BIT_SERVO_MOTOR | BIT_MOTOR_DC);
+
+	// Espera até que os bits do servomotor e motor DC sejam iguais a 0
+	eventosBarco = osEventFlagsGet(grupoEventosBarco);
+	while( (eventosBarco & BIT_SERVO_MOTOR) | (eventosBarco & BIT_MOTOR_DC) )
+	{
+		eventosBarco = osEventFlagsGet(grupoEventosBarco);
+		osDelay(pdMS_TO_TICKS(10));
+	}
+
   }
   /* USER CODE END 5 */
 }
@@ -466,7 +549,7 @@ void startControlador(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_startMagnetometro */
-void startMagnetometro(void const * argument)
+void startMagnetometro(void *argument)
 {
   /* USER CODE BEGIN startMagnetometro */
 
@@ -477,12 +560,24 @@ void startMagnetometro(void const * argument)
   // config[2] = 0x00 = 00000000 -> Modo de leitura contínua
   configuraMagnetometro(hi2c1, config[0], config[1], config[2]);
 
-  // TODO: Mensagem de debug
 
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	// Espera até que a task controlador solicite uma leitura
+	osEventFlagsWait(grupoEventosBarco, BIT_MAGNETOMETRO, osFlagsNoClear, osWaitForever);
+
+
+	teste += 1;
+
+	// TODO: Realizar leituras
+
+	// TODO: Enviar informações para a fila
+
+
+	// Realiza um clear no grupo de eventos após enviar suas informações
+    osEventFlagsClear(grupoEventosBarco, BIT_MAGNETOMETRO);
+	osDelay(pdMS_TO_TICKS(1));
   }
   /* USER CODE END startMagnetometro */
 }
@@ -494,7 +589,7 @@ void startMagnetometro(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_startServoMotor */
-void startServoMotor(void const * argument)
+void startServoMotor(void *argument)
 {
   /* USER CODE BEGIN startServoMotor */
 
@@ -503,6 +598,14 @@ void startServoMotor(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+    // Espera até que a task controlador solicite uma mudança de velocidade
+	osEventFlagsWait(grupoEventosBarco, BIT_SERVO_MOTOR, osFlagsNoClear, osWaitForever);
+
+
+
+	// Limpa a flag após mudar o ângulo do barco
+    //osEventFlagsClear(grupoEventosBarco, BIT_SERVO_MOTOR);
+
     osDelay(1);
   }
   /* USER CODE END startServoMotor */
@@ -515,20 +618,29 @@ void startServoMotor(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_startBluetooth */
-void startBluetooth(void const * argument)
+void startBluetooth(void *argument)
 {
   /* USER CODE BEGIN startBluetooth */
 
 	// String que armazena os resultados lidos pelo módulo bluetooth
 	char respostaBluetooth[128] = {0};
 	// Verifica se o módulo bluetooth está respondendo aos comandos
-	getResponse(huart3, respostaBluetooth);
+	//getResponse(huart3, respostaBluetooth);
 
 	// TODO: Mensagem de debug aqui
 
   /* Infinite loop */
   for(;;)
   {
+	// Espera até que a task controlador solicite uma leitura
+	osEventFlagsWait(grupoEventosBarco, BIT_BLUETOOTH, osFlagsNoClear, osWaitForever);
+
+	// TODO: Realizar leituras
+
+	// TODO: Enviar informações para a fila
+
+	// Após enviar informações para a fila, dá um clear no bit do magnetômetro
+	osEventFlagsClear(grupoEventosBarco, BIT_BLUETOOTH);
     osDelay(1);
   }
   /* USER CODE END startBluetooth */
@@ -541,7 +653,7 @@ void startBluetooth(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_startMotorDC */
-void startMotorDC(void const * argument)
+void startMotorDC(void *argument)
 {
   /* USER CODE BEGIN startMotorDC */
 
@@ -553,12 +665,20 @@ void startMotorDC(void const * argument)
   configHC595(&hc595, L293D_EN_GPIO_Port, L293D_EN_Pin, L293D_CLK_GPIO_Port, L293D_CLK_Pin, L293D_SER_GPIO_Port, L293D_SER_Pin);
   configMotor(&motorTeste, htim14, TIM_CHANNEL_1);
 
-  // TODO: Configurar orientação do motor DC
+  // TODO: Adicionar mensagens de debug
+
+  // TODO: Configurar orientação do motor DC;
 
   /* Infinite loop */
   for(;;)
   {
+	// Espera até que a task controlador solicite uma mudança de velocidade
+	osEventFlagsWait(grupoEventosBarco, BIT_MOTOR_DC, osFlagsNoClear, osWaitForever);
+	teste += 100;
     osDelay(1);
+
+    // Limpa a flag após mudar a velocidade do barco
+    osEventFlagsClear(grupoEventosBarco, BIT_MOTOR_DC);
   }
   /* USER CODE END startMotorDC */
 }
