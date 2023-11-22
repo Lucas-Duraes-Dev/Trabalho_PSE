@@ -19,8 +19,8 @@ Com base nisso, os seguintes elementos do freeRTOS foram criados:
 ## Tasks
 
 - **controlador**: Recebe as informações das tasks **magnetometro** e **bluetooth**; processa as informações recebidas de acordo com a estratégia de controle adotada; envia as novas configurações para as tarefas **motorDC** e **servoMotor**.
-- **bluetooth**: Inicializa o módulo BLE, obtém e processa as informações dos beacons; envia essas informações para a task **controlador** quando solicitado.
-- **magnetometro**: Inicializa o magnetômetro; quando solicitado, obtém, processa e envia as informações lidas pelo magnetômetro para a task **controladora**.
+- **bluetooth**: Inicializa o módulo BLE, quando solicitado, obtém e processa as informações dos beacons e por fim envia essas informações para a task **controlador** quando solicitado.
+- **magnetometro**: Inicializa o magnetômetro; quando solicitado, obtém, processa e envia as informações lidas pelo magnetômetro para a task **controlador**.
 - **motorDC**: Configuração do motor DC; recebe as informações de velocidade da task **controlador** e ajusta a velocidade do motor de acordo com o que foi recebido.
 - **servoMotor**: Configuração do servoMotor; recebe as informações de ângulo da task **controlador** e ajusta a velocidade do motor de acordo com o que foi recebido. 
 
