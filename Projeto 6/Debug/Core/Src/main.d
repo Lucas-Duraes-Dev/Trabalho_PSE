@@ -42,7 +42,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/SERVOMOTOR.h ../Core/Inc/main.h \
  ../Core/Inc/stm32f4xx_hal_conf.h ../Core/Inc/L293D.h \
- ../Core/Inc/bluetooth.h ../Core/Inc/MAGNETOMETRO.h
+ ../Core/Inc/bluetooth.h ../Core/Inc/MAGNETOMETRO.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 
 ../Core/Inc/main.h:
 
@@ -139,3 +141,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/bluetooth.h:
 
 ../Core/Inc/MAGNETOMETRO.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:

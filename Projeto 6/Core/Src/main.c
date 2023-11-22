@@ -28,6 +28,7 @@
 #include "L293D.h"
 #include "bluetooth.h"
 #include "MAGNETOMETRO.h"
+#include "queue.h"
 
 // TODO: Revisar timers do servomotor e motor DC
 
@@ -97,6 +98,26 @@ const osThreadAttr_t motorDC_attributes = {
   .name = "motorDC",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for queueMagnetometro */
+osMessageQueueId_t queueMagnetometroHandle;
+const osMessageQueueAttr_t queueMagnetometro_attributes = {
+  .name = "queueMagnetometro"
+};
+/* Definitions for queueBluetooth */
+osMessageQueueId_t queueBluetoothHandle;
+const osMessageQueueAttr_t queueBluetooth_attributes = {
+  .name = "queueBluetooth"
+};
+/* Definitions for queueMotorDC */
+osMessageQueueId_t queueMotorDCHandle;
+const osMessageQueueAttr_t queueMotorDC_attributes = {
+  .name = "queueMotorDC"
+};
+/* Definitions for queueServoMotor */
+osMessageQueueId_t queueServoMotorHandle;
+const osMessageQueueAttr_t queueServoMotor_attributes = {
+  .name = "queueServoMotor"
 };
 /* USER CODE BEGIN PV */
 
@@ -178,6 +199,19 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of queueMagnetometro */
+  queueMagnetometroHandle = osMessageQueueNew (1, sizeof(float), &queueMagnetometro_attributes);
+
+  /* creation of queueBluetooth */
+  queueBluetoothHandle = osMessageQueueNew (16, sizeof(char), &queueBluetooth_attributes);
+
+  /* creation of queueMotorDC */
+  queueMotorDCHandle = osMessageQueueNew (1, sizeof(uint8_t), &queueMotorDC_attributes);
+
+  /* creation of queueServoMotor */
+  queueServoMotorHandle = osMessageQueueNew (1, sizeof(uint16_t), &queueServoMotor_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -593,7 +627,9 @@ void startServoMotor(void *argument)
 {
   /* USER CODE BEGIN startServoMotor */
 
-	// Nenhuma configuração inicial é necessária para o servomotor
+  // Variáveis de controle
+  UBaseType_t quantidadeElementosQueue = 0;
+  uint16_t anguloServoMotor = 0; // Ângulo recebido pela queue
 
   /* Infinite loop */
   for(;;)
@@ -601,10 +637,18 @@ void startServoMotor(void *argument)
     // Espera até que a task controlador solicite uma mudança de velocidade
 	osEventFlagsWait(grupoEventosBarco, BIT_SERVO_MOTOR, osFlagsNoClear, osWaitForever);
 
+	quantidadeElementosQueue =  uxQueueMessagesWaiting(queueServoMotorHandle);
+	if(quantidadeElementosQueue > 0)
+	{
+		xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
 
+		// Altera o ângulo do servomotor
+		setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , anguloServoMotor);
+
+	}
 
 	// Limpa a flag após mudar o ângulo do barco
-    //osEventFlagsClear(grupoEventosBarco, BIT_SERVO_MOTOR);
+    osEventFlagsClear(grupoEventosBarco, BIT_SERVO_MOTOR);
 
     osDelay(1);
   }
@@ -627,7 +671,6 @@ void startBluetooth(void *argument)
 	// Verifica se o módulo bluetooth está respondendo aos comandos
 	//getResponse(huart3, respostaBluetooth);
 
-	// TODO: Mensagem de debug aqui
 
   /* Infinite loop */
   for(;;)

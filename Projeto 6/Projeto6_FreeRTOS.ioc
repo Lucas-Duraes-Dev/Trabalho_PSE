@@ -1,6 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
 Mcu.Family=STM32F4
 ProjectManager.MainLocation=Core/Src
+FREERTOS.Queues01=queueMagnetometro,1,float,0,Dynamic,NULL,NULL;queueBluetooth,16,char,0,Dynamic,NULL,NULL;queueMotorDC,1,uint8_t,0,Dynamic,NULL,NULL;queueServoMotor,1,uint16_t,0,Dynamic,NULL,NULL
 RCC.CortexFreq_Value=40000000
 ProjectManager.KeepUserCode=true
 Mcu.UserName=STM32F446RETx
@@ -52,7 +53,7 @@ Mcu.Pin7=PA9
 Mcu.Pin8=PA13
 Mcu.Pin9=PA14
 RCC.VCOSAIOutputFreq_Value=192000000
-FREERTOS.IPParameters=Tasks01,Events01
+FREERTOS.IPParameters=Tasks01,Events01,Queues01,FootprintOK
 RCC.AHBFreq_Value=40000000
 Mcu.Pin0=PC13
 Mcu.Pin1=PA5
@@ -95,6 +96,7 @@ ProjectManager.ToolChainLocation=
 RCC.LSI_VALUE=32000
 NVIC.TimeBaseIP=TIM1
 USART3.IPParameters=VirtualMode
+FREERTOS.FootprintOK=true
 PA5.GPIOParameters=GPIO_Label
 PB5.GPIO_Label=L293D_CLK
 SH.S_TIM4_CH1.0=TIM4_CH1,PWM Generation1 CH1
