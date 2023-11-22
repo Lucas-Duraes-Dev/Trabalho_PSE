@@ -45,8 +45,8 @@ O sistema possui 4 queues:
 
 - **queueMagnetometro**: Queue utilizada pela task **magnetometro** para enviar informações lidas para a task **controlador**.
 - **queueBluetooth**: Queue utilizada pela task **bluetooth** para enviar informações lidas para a task **controlador**.
--**queueMotorDC**: Queue utilizada pela task **controlador** para enviar a velocidade do motor desejada para a task **motorDC**.
--**queueServoMotor**: Queue utilizada pela task **controlador** para enviar o ângulo do motor desejado para o servomotor para a task **servoMotor**.
+- **queueMotorDC**: Queue utilizada pela task **controlador** para enviar a velocidade do motor desejada para a task **motorDC**.
+- **queueServoMotor**: Queue utilizada pela task **controlador** para enviar o ângulo do motor desejado para o servomotor para a task **servoMotor**.
 ###### This is a Heading h6
 
 ## Etapas de funcionamento do sistema
