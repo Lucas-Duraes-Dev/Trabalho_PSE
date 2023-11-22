@@ -553,7 +553,7 @@ void startControlador(void *argument)
 	// TODO: Pegar as informações das queues do magnetômetro e bluetooth
 
 
-	// TODO: Realiza a estratégia de controle
+	// TODO: Realiza as equações da estratégia de controle
 
 
 	// TODO: Adiciona a nova velocidade e ângulo para as filas correspondentes
@@ -616,10 +616,8 @@ void startMagnetometro(void *argument)
 	// Seta o valor do ângulo do magnetômetro para 0
 	anguloMagnetometro = 0;
 
-
 	// Realiza um clear no grupo de eventos após enviar suas informações
     osEventFlagsClear(grupoEventosBarco, BIT_MAGNETOMETRO);
-	osDelay(pdMS_TO_TICKS(1));
   }
   /* USER CODE END startMagnetometro */
 }
@@ -690,7 +688,6 @@ void startBluetooth(void *argument)
 
 	// Após enviar informações para a fila, dá um clear no bit do magnetômetro
 	osEventFlagsClear(grupoEventosBarco, BIT_BLUETOOTH);
-    osDelay(1);
   }
   /* USER CODE END startBluetooth */
 }
