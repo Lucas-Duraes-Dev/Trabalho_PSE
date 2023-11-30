@@ -7,8 +7,8 @@ main.c:449:13:MX_USART3_UART_Init	8	static
 main.c:482:13:MX_GPIO_Init	40	static
 main.c:530:6:startControlador	24	static
 main.c:584:6:startMagnetometro	136	static
-main.c:632:6:startServoMotor	112	static
-main.c:669:6:startBluetooth	144	static
-main.c:703:6:startMotorDC	216	static
-main.c:751:6:HAL_TIM_PeriodElapsedCallback	16	static
-main.c:768:6:Error_Handler	4	static,ignoring_inline_asm
+main.c:632:6:startServoMotor	120	static
+main.c:691:6:startBluetooth	208	static
+main.c:733:6:startMotorDC	216	static
+main.c:781:6:HAL_TIM_PeriodElapsedCallback	16	static
+main.c:798:6:Error_Handler	4	static,ignoring_inline_asm

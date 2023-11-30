@@ -356,9 +356,9 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 0;
+  htim4.Init.Prescaler = 320-1;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 1250;
+  htim4.Init.Period = 1250 -1;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -381,7 +381,7 @@ static void MX_TIM4_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 94;
+  sConfigOC.Pulse = 75;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -457,7 +457,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
+  huart3.Init.BaudRate = 2400;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;
@@ -637,6 +637,9 @@ void startServoMotor(void *argument)
   UBaseType_t quantidadeElementosQueue = 0;
   uint16_t anguloServoMotor = 0; // Ângulo recebido pela queue
 
+  uint16_t testAngle = 0;
+
+
   /* Infinite loop */
   for(;;)
   {
@@ -644,6 +647,7 @@ void startServoMotor(void *argument)
 	osEventFlagsWait(grupoEventosBarco, BIT_SERVO_MOTOR, osFlagsNoClear, osWaitForever);
 
 	quantidadeElementosQueue =  uxQueueMessagesWaiting(queueServoMotorHandle);
+
 	if(quantidadeElementosQueue > 0)
 	{
 		xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
@@ -652,6 +656,24 @@ void startServoMotor(void *argument)
 		setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , anguloServoMotor);
 
 	}
+	testAngle += 20;
+	if(testAngle >= 180)
+	{
+		testAngle = 0;
+	}
+	//xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
+
+	// Altera o ângulo do servomotor
+	setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , 0);
+
+	HAL_Delay(5000);
+
+	setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , 180);
+
+	//setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , 135);
+
+	HAL_Delay(5000);
+
 
 	// Limpa a flag após mudar o ângulo do barco
     osEventFlagsClear(grupoEventosBarco, BIT_SERVO_MOTOR);
@@ -674,6 +696,12 @@ void startBluetooth(void *argument)
 	char respostaBluetooth[128] = {0};
 	// Verifica se o módulo bluetooth está respondendo aos comandos
 	//getResponse(huart3, respostaBluetooth);
+	//start(huart3);
+	//getResponse(huart3, respostaBluetooth);
+
+	char envio[32] = {0};
+	char resposta[32] = {0};
+	sprintf(envio,"AT+BAUD\r\n");
 
 
   /* Infinite loop */
@@ -682,7 +710,10 @@ void startBluetooth(void *argument)
 	// Espera até que a task controlador solicite uma leitura
 	osEventFlagsWait(grupoEventosBarco, BIT_BLUETOOTH, osFlagsNoClear, osWaitForever);
 
+	//HAL_UART_Transmit(&huart3, (uint8_t *) envio, strlen(envio), 100);
+	//HAL_UART_Receive(&huart3, (uint8_t *)resposta, 8, 1000);
 	// TODO: Realizar leituras filtradas
+	//localizarBeacons(huart3, respostaBluetooth);
 
 	// TODO: Enviar informações para a fila
 

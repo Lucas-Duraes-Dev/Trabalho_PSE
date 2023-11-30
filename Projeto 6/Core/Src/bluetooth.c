@@ -27,7 +27,7 @@ void getResponse(UART_HandleTypeDef huart, char * resposta){
 	//char resposta[32] = {0};
 	sprintf(envio,"AT+BAUD\r\n");
 
-
+	HAL_UART_Transmit(&huart, (uint8_t *) envio, strlen(envio), 100);
 	HAL_UART_Receive(&huart, (uint8_t *)resposta, 8, 1000);
 	HAL_Delay(1000);
 
@@ -79,15 +79,15 @@ void processarInformacoesBluetooth(const char* informacoes, char* numerosEncontr
     numerosEncontrados[0] = '\0';
 
     // Iterar sobre a string de informações
-    //char* informacoesCopia = strdup(informacoes); // Faz uma cópia da string para evitar modificar a original
-    char* informacoesCopia;
-    informacoesCopia = "+OK\r\n+DEV:1=EFC0F0845DBA,-60,Baseus E9\r\n+DEV:2=C0238D1B26A9,-82,[TV] Samsung AU7700 65 TV\r\n\r\n+DEV:3=ABC123456789,-75,Example Device\r\n+DEV:4=XZY987654321,-68,Sample Gadget\r\n";
+    char* informacoesCopia = strdup(informacoes); // Faz uma cópia da string para evitar modificar a original
+    //char* informacoesCopia;
+    //informacoesCopia = "+OK\r\n+DEV:1=EFC0F0845DBA,-60,Baseus E9\r\n+DEV:2=C0238D1B26A9,-82,[TV] Samsung AU7700 65 TV\r\n\r\n+DEV:3=ABC123456789,-75,Example Device\r\n+DEV:4=XZY987654321,-68,Sample Gadget\r\n";
     char* token = strtok(informacoesCopia, "\r\n");
 
     while (token != NULL) {
     	printf( " %s\n", token );
          //Verificar se a substring contém nomes específicos
-        if (strstr(token, "Baseus") || strstr(token, "ABC") || strstr(token, "Samsung")) {
+        if (strstr(token, "PSE2022_B1") || strstr(token, "PSE2022_B2") || strstr(token, "PSE2022_B3")) {
     	//if (strstr(token, "-")) {
             // Encontrar o número entre '-' e ','
             char* inicioNumero = strchr(token, ',') + 2;
