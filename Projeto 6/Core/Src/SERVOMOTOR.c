@@ -33,10 +33,11 @@ void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, ui
 	// Função para determinar o pulso
 	uint16_t tempo = 20, pulsOK, T;
 	double pulso;
-	double intervalo = ((2.3-1.5)/180); // aproximadamente 0,0044
+	double intervaloSuperior = 2, intervaloInferior = 1;
+	double intervalo = ((intervaloSuperior-intervaloInferior)/180); // aproximadamente 0,0044
 	T = period/10;
 
-	pulso = ((((angulo*intervalo)+1.5)/tempo)*T); // Função para determinar o pulso
+	pulso = ((((angulo*intervalo)+intervaloInferior)/tempo)*T); // Função para determinar o pulso
 	pulsOK = (uint16_t)pulso;
 
 	HAL_TIM_PWM_Stop(&timer, channel); // para de gerar PWM
@@ -49,4 +50,5 @@ void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, ui
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, channel);
 	HAL_TIM_PWM_Start(&timer, channel); // começa a geração de PWM
+
 }
