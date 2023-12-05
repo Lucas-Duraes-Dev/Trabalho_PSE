@@ -457,7 +457,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 2400;
+  huart3.Init.BaudRate = 230400;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;
@@ -653,7 +653,7 @@ void startServoMotor(void *argument)
 		xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
 
 		// Altera o ângulo do servomotor
-		setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , anguloServoMotor);
+		setPWMAngulo(&htim4, TIM_CHANNEL_1, 1250 , anguloServoMotor);
 
 	}
 	testAngle += 20;
@@ -664,15 +664,15 @@ void startServoMotor(void *argument)
 	//xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
 
 	// Altera o ângulo do servomotor
-	setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , 0);
+	setPWMAngulo(&htim4, TIM_CHANNEL_1, 1250 , testAngle);
 
-	HAL_Delay(5000);
+	HAL_Delay(500);
 
-	setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , 180);
+	//setPWMAngulo(&htim4, TIM_CHANNEL_1, 1250 , 180);
 
-	//setPWMAngulo(htim4, TIM_CHANNEL_1, 12500 , 135);
+	//setPWMAngulo(htim4, TIM_CHANNEL_1, 1250 , 135);
 
-	HAL_Delay(5000);
+	//HAL_Delay(5000);
 
 
 	// Limpa a flag após mudar o ângulo do barco

@@ -28,8 +28,45 @@
  * 144 temos a posição máxima.
 */
 
+const float ANGULO_MAXIMO_DIREITA = 0.0254;
+const float ANGULO_MAXIMO_ESQUERDA = 0.1234;
+const float ANGULO_POSICAO_NEUTRA = 0.0744;
 
-void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, uint16_t angulo){
+void setServoAngle(TIM_HandleTypeDef* timer, uint32_t channel, uint16_t period, int8_t angle){
+	uint16_t pulse = 0;
+	if(angle<-90){
+		pulse = ANGULO_MAXIMO_DIREITA*period;
+	}
+	if(angle>90){
+		pulse = ANGULO_MAXIMO_ESQUERDA*period;
+	}
+	if((angle>=-90)&&(angle<0)){
+		pulse = (((angle+90.0)/90)*(ANGULO_POSICAO_NEUTRA-ANGULO_MAXIMO_DIREITA)+ANGULO_MAXIMO_DIREITA)*period;
+	}
+	if((angle>=0)&&(angle<=90)){
+		pulse = (((angle)/90.0)*(ANGULO_MAXIMO_ESQUERDA-ANGULO_POSICAO_NEUTRA)+ANGULO_POSICAO_NEUTRA)*period;
+	}
+	setPWMAngulo(timer,channel,period,pulse);
+}
+
+void setPWMAngulo(TIM_HandleTypeDef* timer, uint32_t channel, uint16_t period, uint16_t pulse)
+{
+	 HAL_TIM_PWM_Stop(timer, channel); // stop generation of pwm
+	 TIM_OC_InitTypeDef sConfigOC;
+	 timer->Init.Period = period; // set the period duration
+	 HAL_TIM_PWM_Init(timer); // reinititialise with new period value
+	 sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	 sConfigOC.Pulse = pulse; // set the pulse duration
+	 sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	 sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	 HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, channel);
+	 HAL_TIM_PWM_Start(timer, channel); // start pwm generation
+}
+
+
+
+/*
+void setPWMAngulo(TIM_HandleTypeDef* timer, uint32_t channel, uint16_t period, uint16_t angulo){
 	// Função para determinar o pulso
 	uint16_t tempo = 20, pulsOK, T;
 	double pulso;
@@ -40,15 +77,16 @@ void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, ui
 	pulso = ((((angulo*intervalo)+intervaloInferior)/tempo)*T); // Função para determinar o pulso
 	pulsOK = (uint16_t)pulso;
 
-	HAL_TIM_PWM_Stop(&timer, channel); // para de gerar PWM
+	HAL_TIM_PWM_Stop(timer, channel); // para de gerar PWM
 	TIM_OC_InitTypeDef sConfigOC;
 	timer.Init.Period = period; // configura a duração do período
-	HAL_TIM_PWM_Init(&timer); // reinicia com novos valores de período
+	HAL_TIM_PWM_Init(timer); // reinicia com novos valores de período
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = pulsOK;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, channel);
-	HAL_TIM_PWM_Start(&timer, channel); // começa a geração de PWM
+	HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, channel);
+	HAL_TIM_PWM_Start(timer, channel); // começa a geração de PWM
 
 }
+*/
