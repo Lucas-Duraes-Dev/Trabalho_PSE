@@ -40,7 +40,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define TEMPLO_CICLO_CONTROLE 1000
+#define TEMPLO_CICLO_CONTROLE 5000
 #define NUMERO_DE_LEITURAS_MAGNETOMETRO 5
 
 #define BIT_MAGNETOMETRO 0x01
@@ -656,10 +656,10 @@ void startServoMotor(void *argument)
 		setPWMAngulo(&htim4, TIM_CHANNEL_1, 1250 , anguloServoMotor);
 
 	}
-	testAngle += 20;
-	if(testAngle >= 180)
+	testAngle += 2;
+	if(testAngle >= 45)
 	{
-		testAngle = 0;
+		testAngle = 45;
 	}
 	//xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
 
@@ -754,6 +754,7 @@ void startMotorDC(void *argument)
 	osEventFlagsWait(grupoEventosBarco, BIT_MOTOR_DC, osFlagsNoClear, osWaitForever);
 
 	// Verifica quantidade de elementos na queue
+	/*
 	quantidadeElementosQueue =  uxQueueMessagesWaiting(queueMotorDCHandle);
 	if(quantidadeElementosQueue > 0)
 	{
@@ -762,7 +763,9 @@ void startMotorDC(void *argument)
 		// Altera a velocidade do motor
 		changeMotorSpeed(&motorTeste, velocidadeMotorDC);
 
-	}
+	}*/
+
+	changeMotorSpeed(&motorTeste, 100);
 
     // Limpa a flag após mudar a velocidade do barco
     osEventFlagsClear(grupoEventosBarco, BIT_MOTOR_DC);
