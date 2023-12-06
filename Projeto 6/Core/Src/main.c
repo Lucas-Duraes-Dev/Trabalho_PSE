@@ -648,6 +648,7 @@ void startServoMotor(void *argument)
 
 	quantidadeElementosQueue =  uxQueueMessagesWaiting(queueServoMotorHandle);
 
+	/*
 	if(quantidadeElementosQueue > 0)
 	{
 		xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
@@ -655,7 +656,7 @@ void startServoMotor(void *argument)
 		// Altera o ângulo do servomotor
 		setPWMAngulo(&htim4, TIM_CHANNEL_1, 1250 , anguloServoMotor);
 
-	}
+	}*/
 	testAngle += 2;
 	if(testAngle >= 45)
 	{
@@ -664,7 +665,7 @@ void startServoMotor(void *argument)
 	//xQueueReceive(queueServoMotorHandle, &anguloServoMotor, pdMS_TO_TICKS(100));
 
 	// Altera o ângulo do servomotor
-	setPWMAngulo(&htim4, TIM_CHANNEL_1, 1250 , testAngle);
+	setServoAngle(&htim4, TIM_CHANNEL_1, 1250 , testAngle);
 
 	HAL_Delay(500);
 

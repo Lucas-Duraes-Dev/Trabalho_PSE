@@ -4,10 +4,7 @@
  *  Created on: Oct 6, 2023
  *      Authors: Stephanie, Lucas e Jackson
  */
-
 #include "SERVOMOTOR.h"
-
-
 /* Com a abertura mínima ocorre aos 1.5 ms enquanto a máxima ao 2.3
  * Assim calculando o intervalo e dividindo pelos 180º conseguimos
  * encontrar qual seria o pulso gerado com base no ângulo passado pela
@@ -70,13 +67,9 @@ void setPWMAngulo(TIM_HandleTypeDef* timer, uint32_t channel, uint16_t period, u
 	// Função para determinar o pulso
 	uint16_t tempo = 20, pulsOK, T;
 	double pulso;
-	double intervaloSuperior = 2, intervaloInferior = 1;
-	double intervalo = ((intervaloSuperior-intervaloInferior)/180); // aproximadamente 0,0044
-	T = period/10;
-
+	@@ -40,15 +77,16 @@ void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, ui
 	pulso = ((((angulo*intervalo)+intervaloInferior)/tempo)*T); // Função para determinar o pulso
 	pulsOK = (uint16_t)pulso;
-
 	HAL_TIM_PWM_Stop(timer, channel); // para de gerar PWM
 	TIM_OC_InitTypeDef sConfigOC;
 	timer.Init.Period = period; // configura a duração do período
@@ -87,6 +80,5 @@ void setPWMAngulo(TIM_HandleTypeDef* timer, uint32_t channel, uint16_t period, u
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, channel);
 	HAL_TIM_PWM_Start(timer, channel); // começa a geração de PWM
-
 }
 */

@@ -65,8 +65,8 @@ all: main-build
 main-build: Projeto6_FreeRTOS.elf secondary-outputs
 
 # Tool invocations
-Projeto6_FreeRTOS.elf: $(OBJS) $(USER_OBJS) C:\Users\Stephanie\STM32CubeIDE\workspace_1.6.1\Projeto6_FreeRTOS\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Projeto6_FreeRTOS.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Stephanie\STM32CubeIDE\workspace_1.6.1\Projeto6_FreeRTOS\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Projeto6_FreeRTOS.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Projeto6_FreeRTOS.elf: $(OBJS) $(USER_OBJS) /home/axton/Desktop/Faculdade/2023-2/Programação_de_Sistemas_Embarcados/Trabalho\ -\ Barco/Trabalho_PSE/Projeto\ 6/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Projeto6_FreeRTOS.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/axton/Desktop/Faculdade/2023-2/Programação_de_Sistemas_Embarcados/Trabalho - Barco/Trabalho_PSE/Projeto 6/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Projeto6_FreeRTOS.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

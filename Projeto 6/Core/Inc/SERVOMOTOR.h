@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <math.h>
 
-void setPWMAngulo(TIM_HandleTypeDef timer, uint32_t channel, uint16_t period, uint16_t angulo);
+void setPWMAngulo(TIM_HandleTypeDef* timer, uint32_t channel, uint16_t period, uint16_t angulo);
 
 
 #endif /* SRC_SERVOMOTOR_H_ */

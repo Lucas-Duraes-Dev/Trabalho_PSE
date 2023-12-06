@@ -1,1 +1,2 @@
-SERVOMOTOR.c:32:6:setPWMAngulo	80	static
+SERVOMOTOR.c:32:6:setServoAngle	40	static
+SERVOMOTOR.c:49:6:setPWMAngulo	56	static
